@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Detection</title>
+</head>
+<body>
+    <script>
+        // Function to detect if the device is mobile
+        function isMobileDevice() {
+            return (typeof window.orientation !== "undefined") || 
+                   (navigator.userAgent.indexOf('IEMobile') !== -1);
+        }
+
+        // Redirect based on device type
+        if (isMobileDevice()) {
+            window.location.href = "https://mobile-memory-lane.tiiny.site";  // Redirect to the mobile version
+        } else {
+            window.location.href = "https://laptop-memory-lane.tiiny.site"; // Redirect to the desktop version
+        }
+    </script>
+</body>
+</html>

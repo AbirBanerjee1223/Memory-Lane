@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Love Story</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #ffdee9, #b5fffc);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50% }
+            50% { background-position: 100% 50% }
+            100% { background-position: 0% 50% }
+        }
+
+        /* Loading Screen */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
+        }
+
+        .loader-heart {
+            font-size: 3rem;
+            color: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1) }
+            50% { transform: scale(1.2) }
+            100% { transform: scale(1) }
+        }
+
+        /* Floating Hearts */
+        #floating-hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            width: 20px;
+            height: 20px;
+            background-color: #ff6b6b;
+            position: fixed;
+            bottom: 0;
+            opacity: 0.7;
+            clip-path: path('M10,4 C10,4 8.5,0 5,0 C2.5,0 0,2 0,5 C0,8 3,11 10,16 C17,11 20,8 20,5 C20,2 17.5,0 15,0 C11.5,0 10,4 10,4');
+            animation: floatUp 5s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Progress Bar */
+        #progress-bar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 10;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: #ff6b6b;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* Introduction Section */
+        .intro {
+            text-align: center;
+            padding: 2rem 1rem;
+            background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+            color: #fff;
+            position: relative;
+            z-index: 2;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        .intro h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .intro p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            padding: 0 1rem;
+        }
+
+        /* Timeline Section */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .memory-card {
+            display: flex;
+            align-items: center;
+            background-color: #ffffff; /* Pure white background */
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Slightly darkened shadow */
+            width: 90%;
+            max-width: 800px;
+            margin: 1.5rem 0;
+            transform: scale(1);
+            transition: transform 0.3s ease-in-out;
+            position: relative;
+        }
+
+        .memory-card.left {
+            flex-direction: row;
+        }
+
+        .memory-card.right {
+            flex-direction: row-reverse;
+        }
+
+        .memory-card:hover {
+            transform: scale(1.05);
+        }
+
+        .memory-image {
+            position: relative;
+            width: 150%;
+        }
+
+        .memory-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .memory-image img:hover {
+            transform: scale(1.05);
+        }
+
+        .memory-description {
+            padding: 1.2rem;
+        }
+        .date-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #ff6b6b;
+            color: #fff;
+            padding: 0.3rem 1rem;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.9rem;
+          }
+
+        .memory-description h2 {
+            font-size: 1.3rem;
+            color: #ff6b6b;
+            margin-bottom: 0.5rem;
+        }
+
+        .memory-description p {
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        /* Overlay for Text */
+        .memory-description::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            z-index: 1;
+        }
+
+        .memory-description h2,
+        .memory-description p {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Interactive Elements */
+        .memory-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 20px;
+            background: #ff6b6b;
+            color: white;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+            background: #ff4b4b;
+        }
+
+        .action-btn i {
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: #ffc3a0;
+            margin-top: 2rem;
+        }
+
+        .footer p {
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .footer span {
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff6b6b;
+            border-radius: 4px;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .intro h1 {
+                font-size: 2rem;
+            }
+
+            .intro p {
+                font-size: 1rem;
+            }
+
+            .memory-card {
+                width: 100%;
+                flex-direction: column;
+                margin: 1rem 0;
+            }
+
+            .memory-card .memory-image {
+                width: 100%;
+                padding-bottom: 10px;
+            }
+
+            .memory-card .memory-description {
+                width: 100%;
+                padding: 1rem;
+            }
+
+            .memory-image img {
+                width: 100%;
+                height: auto;
+                border-radius: 12px;
+            }
+
+            .memory-card .memory-image::after {
+                content: attr(data-caption);
+                display: block;
+                text-align: center;
+                font-size: 0.9rem;
+                color: #555;
+                margin-top: 5px;
+            }
+
+            .memory-description h2 {
+                font-size: 1.1rem;
+            }
+
+            .memory-description p {
+                font-size: 0.9rem;
+            }
+
+            .action-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .loader-heart {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .intro h1 {
+                font-size: 1.5rem;
+            }
+
+            .intro p {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div class="loader">
+    <div class="loader-heart">
+        ❤️
+    </div>
+</div>
+
+<!-- Floating Hearts -->
+<div id="floating-hearts-container">
+    <div class="heart" style="left: 10%; animation-duration: 7s;"></div>
+    <div class="heart" style="left: 50%; animation-duration: 6s;"></div>
+    <div class="heart" style="left: 80%; animation-duration: 8s;"></div>
+</div>
+
+<!-- Progress Bar -->
+<div id="progress-bar-container">
+    <div id="progress-bar"></div>
+</div>
+
+<!-- Introduction Section -->
+<div class="intro">
+    <h1>Our Memory Timeline</h1>
+    <p>Ekhane we have all the dates and pictures jeta amra tulechilam.. reminding sob memory gulo arr sarajibon mone rakhar jonno ache sob arki.. hopefully sob din gulo mathai chole asbe</p>
+</div>
+
+<!-- Timeline Section -->
+<section class="timeline">
+    <div class="memory-card left">
+        <div class="memory-image" data-caption="The First Photo">
+            <img src="https://i.postimg.cc/tgXCSksM/IMG-20230909-WA0024.jpg" alt="Memory 1">
+            <div class="date-badge">September 9, 2023</div>
+        </div>
+        <div class="memory-description">
+            <h2>The First Photo</h2>
+            <p>Sei prothom planned berono.. bikele jhil par ee dariye golpo arr tor oi misti hasi ta akhono mone pore.. jantam oo na pore kichu hobe kina but akta feeling chole esechilo mone</p>
+        </div>
+    </div>
+    <div class="memory-card right">
+        <div class="memory-image" data-caption="Our First Date">
+            <img src="https://i.postimg.cc/vm38pn9H/IMG-20230913-WA0055.jpg" alt="Memory 2">
+            <div class="date-badge">September 13, 2023</div>
+        </div>
+        <div class="memory-description">
+            <h2>Our First Date</h2>
+            <p>Ecopark er oi moja ta.. finally relationship ee asa ta.. and and let's not forget bristi te hat dhore dourano ta.. prothom thekei sob romantic hoye jacchilooo jeno..</p>
+        </div>
+    </div>
+    <div class="memory-card left">
+        <div class="memory-image" data-caption="Movie dekhte jawa">
+            <img src="https://i.postimg.cc/431cwn2Z/IMG-20230924-WA0029.jpg" alt="Memory 3">
+            <div class="date-badge">September 24, 2023</div>
+        </div>
+        <div class="memory-description">
+            <h2>Movie dekhte jawa</h2>
+            <p>Sukoon chilo sei din ta.. CC1 ee movie dekhte gechilam.. arr sei gate ee jigessa korlo "Mam 18+ too".. kotoi na hesechi ota bhebe.. jodio dekhte to cuteeee sa baccha ee lagchili.. hehe</p>
+        </div>
+    </div>
+    <div class="memory-card right">
+        <div class="memory-image" data-caption="Akta sudden meet">
+            <img src="https://i.postimg.cc/mDXHfJG5/IMG-20231006-WA0036.jpg" alt="Memory 4">
+            <div class="date-badge">October 6, 2023</div>
+        </div>
+        <div class="memory-description">
+            <h2>Akta sudden meet</h2>
+            <p>Kotoo din por finally miss korchi bole bole dekha korechilam.. tor college theke ferar somoi.. rastar dhare bose adda.. arr oi black hairclip ta kikore bhuli.. sei din ee to peyechilam ota arr akhono jotno kore rakha ache</p>
+        </div>
+    </div>
+    <div class="memory-card left">
+        <div class="memory-image" data-caption="First Durga Pujo timee">
+            <img src="https://i.postimg.cc/qvmDCMHZ/IMG-20241112-205504.jpg" alt="Memory 5">
+            <div class="date-badge">October 15, 2023</div>
+        </div>
+        <div class="memory-description">
+            <h2>First Durga Pujo timee</h2>
+            <p>Hehe ei din ta.. ake opor k dewa jama pore pujo pandel.. then church and finally princep ghat.. best ghora till now nki? Koto boroo plan chilo arr koto ee na happy feel korechilam purotar pore.. that romantic connection.. hayee</p>
+        </div>
+    </div>
+    <div class="memory-card right">
+        <div class="memory-image" data-caption="Coffee Date">
+            <img src="https://i.postimg.cc/fT00p8q8/IMG-20231108-WA0033.jpg" alt="Memory 6">
+            <div class="date-badge">November 8, 2023</div>
+        </div>
+        <div class="memory-description">
+            <h2>Coffee Date</h2>
+            <p>Sei alada funny din chilo.. khabar er plan na peye.. Barista cafe te 950 uriye esechilam.. arr ja regret chilo.. erpor coffee kheye oto kokhono oratam na amra..</p>
+        </div>
+    </div>
+    <div class="memory-card left">
+        <div class="memory-image" data-caption="First pic in new phone">
+            <img src="https://i.postimg.cc/C18ctGBW/IMG-20241112-205520.jpg" alt="Memory 7">
+            <div class="date-badge">November 19, 2023</div>
+        </div>
+        <div class="memory-description">
+            <h2>First pic in new phone</h2>
+            <p>Bday r por sei first meet.. ami to ghor pg na ese theke direct ee dekha korte chole gechilam tui beriye jetis bole.. bohut miss korechilam bday te toke.. arr tui phone tao dekhchili sei amr.. interest er sathe</p>
+        </div>
+    </div>
+    <div class="memory-card right">
+        <div class="memory-image" data-caption="My Birthday Celebration">
+            <img src="https://i.postimg.cc/C5RfF7hL/IMG-20231213-WA0018.jpg" alt="Memory 8">
+            <div class="date-badge">November 30, 2023</div>
+        </div>
+        <div class="memory-description">
+            <h2>My Birthday Celebration</h2>
+            <p>Hotat kore deke niye cake katiye nili bol arr janteo dili na oi jonno dakchis.. plus uk ota amr first time kono person oi bhabe amr bday manalo.. thanks love for every effort you made for me... it was the best experience I had...</p>
+        </div>
+    </div>
+    <div class="memory-card left">
+        <div class="memory-image" data-caption="Quest Mall plan">
+            <img src="https://i.postimg.cc/850jnvR8/IMG20231206152516.jpg" alt="Memory 9">
+            <div class="date-badge">December 6,2023</div>
+        </div>
+        <div class="memory-description">
+            <h2>Quest Mall plan</h2>
+            <p>Sei gechilam kolkata r most expensive mall ee adda marte mojai mojai.. enjoy to korechilam khub but toke tram ee chapanor plan ta holo na tai khub baje feel korchilam.. hehe still you didn\'t mind.. arr oi din ee amader sei metro r best chobi tule diyechilo Srijani.. I miss that day</p>
+        </div>
+    </div>
+    <div class="memory-card right">
+        <div class="memory-image" data-caption="Final date of the year at Victoria">
+            <img src="https://i.postimg.cc/QttFbmWk/IMG20231223135043.jpg" alt="Memory 10">
+            <div class="date-badge">December 23,2023</div>
+        </div>
+        <div class="memory-description">
+            <h2>Final date of the year at Victoria</h2>
+            <p>At one of the love places of kolkata, jekhane tor koto je cute moments dekhechilam.. christmas er lightning enjoy korechilam.. arr amra jani how much we enjoyed that day.. was very unique nischoi..</p>
+        </div>
+    </div>
+    <div class="memory-card left">
+        <div class="memory-image" data-caption="The Sarobar Lake moment">
+            <img src="https://i.postimg.cc/s2KB7q1g/IMG20240114162228.jpg" alt="Memory 11">
+            <div class="date-badge">January 14, 2024</div>
+        </div>
+        <div class="memory-description">
+            <h2>The Sarobar Lake moment</h2>
+            <p>Aro akta love place, new year er first date arr bhalo personal time spent.. ei din gulo ee mone thake.. koto moments share korechi at every place arr jotobar okahn diye pass kori sei din ta cholei ase choker samne.. hat dhore bose thakte icche kore..</p>
+        </div>
+    </div>
+    <div class="memory-card right">
+        <div class="memory-image" data-caption="Cutie r birthday celebration">
+            <img src="https://i.postimg.cc/YSZXbn96/IMG-20241112-205611.jpg" alt="Memory 12">
+            <div class="date-badge">February 18, 2024</div>
+        </div>
+        <div class="memory-description">
+            <h2>Cutie r birthday celebration</h2>
+            <p>Heheee tor first birthday.. amr khepu/santa r first birthday.. arr plan to onnk korechilam toke surprise dewar jonno kcihu ta success oo peyechilam maybe.. sob theke difficult chilo hocche oi same bus ee uthe surprise kora ta.. otar jonno 1.5 hrs dariyechilam ooo.. and then those reactions gift gulo peye.. sei octi then chocos.. I love giving surprises to youuu</p>
+        </div>
+    </div>
+    <div class="memory-card left">
+        <div class="memory-image" data-caption="Amader flop plan">
+            <img src="https://i.postimg.cc/MZgYnMhr/IMG20240313185044.jpg" alt="Memory 13">
+            <div class="date-badge">March 13, 2024</div>
+        </div>
+        <div class="memory-description">
+            <h2>Amader flop plan</h2>
+            <p>Sedin er golpo tao alada.. amra sei mela dekhte elam karunamoyee arr ota sesh hoye gechilo.. then makeup korar jonno amra hete cc1 chole gelam.. funny jinis oo hoyeche amader life ee koto.. egulo ee to prove kore baje times eo kichu bhabe manage korei ni amra situation and enjoy kori jetai ase.. aksathe face kore we overcome it</p>
+        </div>
+    </div>
+    <div class="memory-card right">
+        <div class="memory-image" data-caption="Arambagh er time">
+            <img src="https://i.postimg.cc/wx1Vxcbm/IMG20240426173651.jpg" alt="Memory 14">
+            <div class="date-badge">April 26,2024</div>
+        </div>
+        <div class="memory-description">
+            <h2>Arambagh er time</h2>
+            <p>Eta to kikore ee bhulbo ami yaar... lukiye karur jonno first time 3 hrs travel kore dekha korte gechilam.. and it was worth every effort.. sei kole sue mathai hat bolano ta.. I still crave otar jonno majhe majhei.. the most peaceful thing felt.. I love you..</p>
+        </div>
+    </div>
+    <div class="memory-card left">
+        <div class="memory-image" data-caption="Esplanade er shopping">
+            <img src="https://i.postimg.cc/JtwtRWYP/IMG20240501141841.jpg" alt="Memory 15">
+            <div class="date-badge">May 1, 2024</div>
+        </div>
+        <div class="memory-description">
+            <h2>Esplanade er shopping</h2>
+            <p>Bari jawar age tor sathe ektu time spend kore bhaloi legechilo sedin.. esplanade ghure.. adda mere dhosa kheye then metro te chere diye gechilam.. arr rastai koto hasi thatta.. kintu sedin sob theke kharap lagchilo keno jnina aj oo.. kintu sedin chere asa was feeling the worst.. aj obdi akhono chere aste oto kosto hoini.. really cried that day</p>
+        </div>
+    </div>
+    <div class="memory-card right">
+        <div class="memory-image" data-caption="Howrah theke ana">
+            <img src="https://i.postimg.cc/8cfj8C47/IMG20240506212803.jpg" alt="Memory 16">
+            <div class="date-badge">May 6, 2024</div>
+        </div>
+        <div class="memory-description">
+            <h2>Howrah theke ana</h2>
+            <p>Toke ferot ante jawar feeling tao aladai  kintu.. sei akta apon  type er feeling jerokom nijer kaoke bola hoi je chole aaye amake ante aksathe jabo golpo korte korte.. arr seta kore time spend oo kore newa jai aksathe jeta majhe majhe normally kora possible hoina.. plus sei ager bar bollam je chere aste kotota mon kharap lagchilo tai ei ante jawa ta tottai khusi r lagchilo</p>
+        </div>
+    </div>
+    <div class="memory-card left">
+        <div class="memory-image" data-caption="Firchilam from Howrah">
+            <img src="https://i.postimg.cc/xdjvwKzq/IMG20240603172713.jpg" alt="Memory 17">
+            <div class="date-badge">June 3, 2024</div>
+        </div>
+        <div class="memory-description">
+            <h2>Firchilam from Howrah</h2>
+            <p>Ei din eo kando ghotechilo I remember heheee.. firstly to ami tor pase ladies seat ee bose achi.. but tar thekeo boro amra bhul bus ee uthe porechilam.. then sei sealdah r oo pase giye daralo and 15 hete tarpor metro station ee ese pouchechilam.. kotooo sorry bolechilam and bujhte oo perechilam kosto hocche tor.. rod ee hata otota but tui ektu oo rag dekhasni.. really thank you for that</p>
+        </div>
+    </div>
+    <div class="memory-card right">
+        <div class="memory-image" data-caption="OMG cafe date">
+            <img src="https://i.postimg.cc/0NbWGR85/omg-01-09-24.jpg" alt="Memory 18">
+            <div class="date-badge">September 1,2024</div>
+        </div>
+        <div class="memory-description">
+            <h2>OMG cafe date</h2>
+            <p>After a long long time.. finally sob thik houar por going to a cafe.. kandhe matha rekhe sue thaka.. sob kotha clear kora.. and most importantly sei bonding the create kora once again.. ei jaiga ta with you holds a special place amr kache for sure...</p>
+        </div>
+    </div>
+    <div class="memory-card left">
+        <div class="memory-image" data-caption="Mela r shopping">
+            <img src="https://i.postimg.cc/fRf7qHk6/IMG20240904202938.jpg" alt="Memory 19">
+            <div class="date-badge">September 4,2024</div>
+        </div>
+        <div class="memory-description">
+            <h2>Mela r shopping</h2>
+            <p>Sei kamon mela jawar jed dhorechili tui ar srijani.. ami kikore ei cute meye ta k na boli bol.. arr mela ghorar porer harkat gulo oo khub cutee chilooo sacchi.. plus ek baat bolu oi hair band ta toke khub suit kore kintu mne akdom baccha vibes arr oi bracelet ta puro princess..</p>
+        </div>
+    </div>
+    <div class="memory-card right">
+        <div class="memory-image" data-caption="Our aniversary">
+            <img src="https://i.postimg.cc/85fCM0cw/IMG-20241119-165247.jpg" alt="Memory 20">
+            <div class="date-badge">September 20,2024</div>
+        </div>
+        <div class="memory-description">
+            <h2>Our aniversary</h2>
+            <p>Ei din er chobi to nei amader aksathe.. but akta jinis jni je tor expression was like a child jake I would love forever.. jar jonno I can bring flowers forever.. jar sathe I can smile forever..</p>
+        </div>
+    </div>
+    <div class="memory-card left">
+        <div class="memory-image" data-caption="More to come..">
+            <img src="https://t4.ftcdn.net/jpg/04/55/07/77/360_F_455077730_wJ5b2bddWikO6zVOoq27yilT09xO6xnQ.jpg" alt="Memory 21">
+            <div class="date-badge">Till infinity</div>
+        </div>
+        <div class="memory-description">
+            <h2>More to come..</h2>
+            <p>Maybe aro onek erokom memory ese bosbe ei memory lane ee.. aro sob somoi ei time gulo cherish korte parbo</p>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<div class="footer">
+    <p>Made with ❤️ by <span>Abir</span></p>
+</div>
+
+<script>
+    // Remove loader after the page loads
+    window.onload = () => {
+        document.querySelector('.loader').style.display = 'none';
+    };
+
+    // Simulate progress bar loading
+    window.addEventListener('scroll', () => {
+        // Calculate the scroll progress
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight - windowHeight;
+        const scrollTop = window.scrollY;
+        const scrollPercentage = (scrollTop / documentHeight) * 100;
+        
+        // Update the progress bar width
+        document.getElementById('progress-bar').style.width = scrollPercentage + '%';
+    });
+    
+</script>
+
+</body>
+</html>

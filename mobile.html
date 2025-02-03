@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Love Story</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #ffdee9, #b5fffc);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50% }
+            50% { background-position: 100% 50% }
+            100% { background-position: 0% 50% }
+        }
+
+        /* Loading Screen */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
+        }
+
+        .loader-heart {
+            font-size: 3rem;
+            color: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1) }
+            50% { transform: scale(1.2) }
+            100% { transform: scale(1) }
+        }
+
+        /* Floating Hearts */
+        #floating-hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            width: 20px;
+            height: 20px;
+            background-color: #ff6b6b;
+            position: fixed;
+            bottom: 0;
+            opacity: 0.7;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: floatUp 5s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Progress Bar */
+        #progress-bar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 10;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: #ff6b6b;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* Introduction Section */
+        .intro {
+            text-align: center;
+            padding: 2rem 1rem;
+            background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+            color: #fff;
+            position: relative;
+            z-index: 2;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        .intro h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .intro p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            padding: 0 1rem;
+        }
+
+        /* Timeline Section */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .memory-card {
+            display: flex;
+            align-items: center;
+            background-color: #ffffff; /* Pure white background */
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Slightly darkened shadow */
+            width: 90%;
+            max-width: 800px;
+            margin: 1.5rem 0;
+            transform: scale(1);
+            transition: transform 0.3s ease-in-out;
+            position: relative;
+        }
+
+        .memory-card.left {
+            flex-direction: row;
+        }
+
+        .memory-card.right {
+            flex-direction: row-reverse;
+        }
+
+        .memory-card:hover {
+            transform: scale(1.05);
+        }
+
+        .memory-image {
+            position: relative;
+            width: 50%;
+        }
+
+        .memory-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .memory-image img:hover {
+            transform: scale(1.05);
+        }
+
+        .memory-description {
+            padding: 1.2rem;
+        }
+
+        .date-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #ff6b6b;
+            color: #fff;
+            padding: 0.3rem 1rem;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .memory-description h2 {
+            font-size: 1.3rem;
+            color: #ff6b6b;
+            margin-bottom: 0.5rem;
+        }
+
+        .memory-description p {
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        /* Overlay for Text */
+        .memory-description::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            z-index: 1;
+        }
+
+        .memory-description h2,
+        .memory-description p {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Interactive Elements */
+        .memory-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 20px;
+            background: #ff6b6b;
+            color: white;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+            background: #ff4b4b;
+        }
+
+        .action-btn i {
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: #ffc3a0;
+            margin-top: 2rem;
+        }
+
+        .footer p {
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .footer span {
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff6b6b;
+            border-radius: 4px;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .intro h1 {
+                font-size: 2rem;
+            }
+
+            .intro p {
+                font-size: 1rem;
+            }
+
+            .memory-card {
+                width: 100%;
+                flex-direction: column;
+                margin: 1rem 0;
+            }
+
+            .memory-card .memory-image {
+                width: 100%;
+                padding-bottom: 10px;
+            }
+
+            .memory-card .memory-description {
+                width: 100%;
+                padding: 1rem;
+            }
+
+            .memory-image img {
+                width: 100%;
+                height: auto;
+                border-radius: 12px;
+            }
+
+            .memory-card .memory-image::after {
+                content: attr(data-caption);
+                display: block;
+                text-align: center;
+                font-size: 0.9rem;
+                color: #555;
+                margin-top: 5px;
+            }
+
+            .memory-description h2 {
+                font-size: 1.1rem;
+            }
+
+            .memory-description p {
+                font-size: 0.9rem;
+            }
+
+            .action-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .loader-heart {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .intro h1 {
+                font-size: 1.5rem;
+            }
+
+            .intro p {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div class="loader">
+    <div class="loader-heart">
+        ❤️
+    </div>
+</div>
+
+<!-- Floating Hearts -->
+<div id="floating-hearts-container">
+    <div class="heart" style="left: 10%; animation-duration: 7s;"></div>
+    <div class="heart" style="left: 50%; animation-duration: 6s;"></div>
+    <div class="heart" style="left: 80%; animation-duration: 8s;"></div>
+</div>
+
+<!-- Progress Bar -->
+<div id="progress-bar-container">
+    <div id="progress-bar"></div>
+</div>
+
+<!-- Introduction Section -->
+<div class="intro">
+    <h1>Our Love Story</h1>
+    <p>Join us on a journey through unforgettable memories, celebrating the beautiful moments we've shared together.</p>
+</div>
+
+<!-- Timeline Section -->
+<section class="timeline">
+    <div class="memory-card left">
+        <div class="memory-image" data-caption="Our First Date">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwrIsHYe724TMVrq1ebDr8JRX_Car4T5rp7g&s" alt="Memory 1">
+            <div class="date-badge">January 1, 2023</div>
+        </div>
+        <div class="memory-description">
+            <h2>Our First Date</h2>
+            <p>It was a perfect evening, filled with laughter and unforgettable moments...</p>
+        </div>
+    </div>
+    <div class="memory-card right">
+        <div class="memory-image" data-caption="Our First Trip">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwrIsHYe724TMVrq1ebDr8JRX_Car4T5rp7g&s" alt="Memory 2">
+            <div class="date-badge">February 14, 2023</div>
+        </div>
+        <div class="memory-description">
+            <h2>Our First Trip</h2>
+            <p>A memorable adventure where we discovered new places and shared so much joy...</p>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<div class="footer">
+    <p>Made with ❤️ by <span>Your Name</span></p>
+</div>
+
+<script>
+    // Remove loader after the page loads
+    window.onload = () => {
+        document.querySelector('.loader').style.display = 'none';
+    };
+
+    // Simulate progress bar loading
+    let progressBar = document.getElementById('progress-bar');
+    let width = 0;
+    let interval = setInterval(() => {
+        if (width >= 100) {
+            clearInterval(interval);
+        } else {
+            width++;
+            progressBar.style.width = width + '%';
+        }
+    }, 50);
+</script>
+
+</body>
+</html>
