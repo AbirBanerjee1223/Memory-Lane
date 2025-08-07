@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Memory Lane</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #ffdee9, #b5fffc);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50% }
+            50% { background-position: 100% 50% }
+            100% { background-position: 0% 50% }
+        }
+
+        /* Loading Screen */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
+        }
+
+        .loader-heart {
+            font-size: 3rem;
+            color: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1) }
+            50% { transform: scale(1.2) }
+            100% { transform: scale(1) }
+        }
+
+        /* Floating Hearts */
+        #floating-hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            width: 20px;
+            height: 20px;
+            background-color: #ff6b6b;
+            position: fixed;
+            bottom: -20px;
+            opacity: 0.7;
+            clip-path: path('M10,4 C10,4 8.5,0 5,0 C2.5,0 0,2 0,5 C0,8 3,11 10,16 C17,11 20,8 20,5 C20,2 17.5,0 15,0 C11.5,0 10,4 10,4');
+            animation: floatUp 5s linear infinite;
+        }
+
+        @keyframes floatUp {
+            from {
+                transform: translateY(0) scale(0.5);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(-100vh) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Progress Bar */
+        #progress-bar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 10;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: #ff6b6b;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* Introduction Section */
+        .intro {
+            text-align: center;
+            padding: 4rem 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: #333;
+            position: relative;
+            z-index: 2;
+        }
+
+        .intro h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .intro p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Timeline Section */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .memory-card {
+            display: flex;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 800px;
+            margin: 1.5rem 0;
+            transform: scale(1);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            overflow: hidden;
+        }
+
+        .memory-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .memory-card.left { flex-direction: row; }
+        .memory-card.right { flex-direction: row-reverse; }
+
+        .memory-image {
+            width: 50%;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .memory-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .memory-image:hover img {
+            transform: scale(1.1);
+        }
+
+        .memory-description {
+            padding: 1.5rem;
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .date-badge {
+            background-color: #ff6b6b;
+            color: #fff;
+            padding: 0.3rem 1rem;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .memory-description h2 {
+            font-size: 1.5rem;
+            color: #ff6b6b;
+            margin-bottom: 0.5rem;
+        }
+
+        .memory-description p {
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+        
+        .memory-actions {
+            margin-top: 1rem;
+        }
+
+        .like-btn {
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Lightbox Modal */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 80%;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            margin-top: 2rem;
+        }
+
+        .footer p {
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .footer span {
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        /* Music Player */
+        #music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        #music-player button {
+            background: #ff6b6b;
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .memory-card {
+                flex-direction: column !important;
+            }
+
+            .memory-image, .memory-description {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="loader">
+        <div class="loader-heart">❤️</div>
+    </div>
+
+    <div id="floating-hearts-container"></div>
+
+    <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <div class="intro">
+        <h1>Our Memory Timeline</h1>
+        <p>Ekhane we have all the dates and pictures jeta amra tulechilam.. reminding sob memory gulo arr sarajibon mone rakhar jonno ache sob arki.. hopefully sob din gulo mathai chole asbe</p>
+    </div>
+
+    <section class="timeline">
+        </section>
+
+    <div id="lightbox" class="lightbox">
+        <span class="lightbox-close">&times;</span>
+        <img class="lightbox-content" id="lightbox-img">
+    </div>
+
+    <div class="footer">
+        <p>Made with ❤️ by <span>Abir</span></p>
+    </div>
+
+    <div id="music-player">
+        <audio id="background-music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop></audio>
+        <button id="play-pause-btn"><i class="fas fa-play"></i></button>
+    </div>
+
+    <script>
+        const memories = [
+            {
+                date: "September 9, 2023",
+                title: "The First Photo",
+                description: "Sei prothom planned berono.. bikele jhil par ee dariye golpo arr tor oi misti hasi ta akhono mone pore.. jantam oo na pore kichu hobe kina but akta feeling chole esechilo mone",
+                image: "https://i.postimg.cc/tgXCSksM/IMG-20230909-WA0024.jpg",
+                align: "left"
+            },
+            {
+                date: "September 13, 2023",
+                title: "Our First Date",
+                description: "Ecopark er oi moja ta.. finally relationship ee asa ta.. and and let's not forget bristi te hat dhore dourano ta.. prothom thekei sob romantic hoye jacchilooo jeno..",
+                image: "https://i.postimg.cc/vm38pn9H/IMG-20230913-WA0055.jpg",
+                align: "right"
+            },
+            {
+                date: "September 24, 2023",
+                title: "Movie dekhte jawa",
+                description: "Sukoon chilo sei din ta.. CC1 ee movie dekhte gechilam.. arr sei gate ee jigessa korlo \"Mam 18+ too\".. kotoi na hesechi ota bhebe.. jodio dekhte to cuteeee sa baccha ee lagchili.. hehe",
+                image: "https://i.postimg.cc/431cwn2Z/IMG-20230924-WA0029.jpg",
+                align: "left"
+            },
+            {
+                date: "October 6, 2023",
+                title: "Akta sudden meet",
+                description: "Kotoo din por finally miss korchi bole bole dekha korechilam.. tor college theke ferar somoi.. rastar dhare bose adda.. arr oi black hairclip ta kikore bhuli.. sei din ee to peyechilam ota arr akhono jotno kore rakha ache",
+                image: "https://i.postimg.cc/mDXHfJG5/IMG-20231006-WA0036.jpg",
+                align: "right"
+            },
+            {
+                date: "October 15, 2023",
+                title: "First Durga Pujo timee",
+                description: "Hehe ei din ta.. ake opor k dewa jama pore pujo pandel.. then church and finally princep ghat.. best ghora till now nki? Koto boroo plan chilo arr koto ee na happy feel korechilam purotar pore.. that romantic connection.. hayee",
+                image: "https://i.postimg.cc/qvmDCMHZ/IMG-20241112-205504.jpg",
+                align: "left"
+            },
+            {
+                date: "November 8, 2023",
+                title: "Coffee Date",
+                description: "Sei alada funny din chilo.. khabar er plan na peye.. Barista cafe te 950 uriye esechilam.. arr ja regret chilo.. erpor coffee kheye oto kokhono oratam na amra..",
+                image: "https://i.postimg.cc/fT00p8q8/IMG-20231108-WA0033.jpg",
+                align: "right"
+            },
+            {
+                date: "November 19, 2023",
+                title: "First pic in new phone",
+                description: "Bday r por sei first meet.. ami to ghor pg na ese theke direct ee dekha korte chole gechilam tui beriye jetis bole.. bohut miss korechilam bday te toke.. arr tui phone tao dekhchili sei amr.. interest er sathe",
+                image: "https://i.postimg.cc/C18ctGBW/IMG-20241112-205520.jpg",
+                align: "left"
+            },
+            {
+                date: "November 30, 2023",
+                title: "My Birthday Celebration",
+                description: "Hotat kore deke niye cake katiye nili bol arr janteo dili na oi jonno dakchis.. plus uk ota amr first time kono person oi bhabe amr bday manalo.. thanks love for every effort you made for me... it was the best experience I had...",
+                image: "https://i.postimg.cc/C5RfF7hL/IMG-20231213-WA0018.jpg",
+                align: "right"
+            },
+            {
+                date: "December 6, 2023",
+                title: "Quest Mall plan",
+                description: "Sei gechilam kolkata r most expensive mall ee adda marte mojai mojai.. enjoy to korechilam khub but toke tram ee chapanor plan ta holo na tai khub baje feel korchilam.. hehe still you didn't mind.. arr oi din ee amader sei metro r best chobi tule diyechilo Srijani.. I miss that day",
+                image: "https://i.postimg.cc/850jnvR8/IMG20231206152516.jpg",
+                align: "left"
+            },
+            {
+                date: "December 23, 2023",
+                title: "Final date of the year at Victoria",
+                description: "At one of the love places of kolkata, jekhane tor koto je cute moments dekhechilam.. christmas er lightning enjoy korechilam.. arr amra jani how much we enjoyed that day.. was very unique nischoi..",
+                image: "https://i.postimg.cc/QttFbmWk/IMG20231223135043.jpg",
+                align: "right"
+            },
+            {
+                date: "January 14, 2024",
+                title: "The Sarobar Lake moment",
+                description: "Aro akta love place, new year er first date arr bhalo personal time spent.. ei din gulo ee mone thake.. koto moments share korechi at every place arr jotobar okahn diye pass kori sei din ta cholei ase choker samne.. hat dhore bose thakte icche kore..",
+                image: "https://i.postimg.cc/s2KB7q1g/IMG20240114162228.jpg",
+                align: "left"
+            },
+            {
+                date: "February 18, 2024",
+                title: "Cutie r birthday celebration",
+                description: "Heheee tor first birthday.. amr khepu/santa r first birthday.. arr plan to onnk korechilam toke surprise dewar jonno kcihu ta success oo peyechilam maybe.. sob theke difficult chilo hocche oi same bus ee uthe surprise kora ta.. otar jonno 1.5 hrs dariyechilam ooo.. and then those reactions gift gulo peye.. sei octi then chocos.. I love giving surprises to youuu",
+                image: "https://i.postimg.cc/YSZXbn96/IMG-20241112-205611.jpg",
+                align: "right"
+            },
+            {
+                date: "March 13, 2024",
+                title: "Amader flop plan",
+                description: "Sedin er golpo tao alada.. amra sei mela dekhte elam karunamoyee arr ota sesh hoye gechilo.. then makeup korar jonno amra hete cc1 chole gelam.. funny jinis oo hoyeche amader life ee koto.. egulo ee to prove kore baje times eo kichu bhabe manage korei ni amra situation and enjoy kori jetai ase.. aksathe face kore we overcome it",
+                image: "https://i.postimg.cc/MZgYnMhr/IMG20240313185044.jpg",
+                align: "left"
+            },
+            {
+                date: "April 26, 2024",
+                title: "Arambagh er time",
+                description: "Eta to kikore ee bhulbo ami yaar... lukiye karur jonno first time 3 hrs travel kore dekha korte gechilam.. and it was worth every effort.. sei kole sue mathai hat bolano ta.. I still crave otar jonno majhe majhei.. the most peaceful thing felt.. I love you..",
+                image: "https://i.postimg.cc/wx1Vxcbm/IMG20240426173651.jpg",
+                align: "right"
+            },
+            {
+                date: "May 1, 2024",
+                title: "Esplanade er shopping",
+                description: "Bari jawar age tor sathe ektu time spend kore bhaloi legechilo sedin.. esplanade ghure.. adda mere dhosa kheye then metro te chere diye gechilam.. arr rastai koto hasi thatta.. kintu sedin sob theke kharap lagchilo keno jnina aj oo.. kintu sedin chere asa was feeling the worst.. aj obdi akhono chere aste oto kosto hoini.. really cried that day",
+                image: "https://i.postimg.cc/JtwtRWYP/IMG20240501141841.jpg",
+                align: "left"
+            },
+            {
+                date: "May 6, 2024",
+                title: "Howrah theke ana",
+                description: "Toke ferot ante jawar feeling tao aladai  kintu.. sei akta apon  type er feeling jerokom nijer kaoke bola hoi je chole aaye amake ante aksathe jabo golpo korte korte.. arr seta kore time spend oo kore newa jai aksathe jeta majhe majhe normally kora possible hoina.. plus sei ager bar bollam je chere aste kotota mon kharap lagchilo tai ei ante jawa ta tottai khusi r lagchilo",
+                image: "https://i.postimg.cc/8cfj8C47/IMG20240506212803.jpg",
+                align: "right"
+            },
+            {
+                date: "June 3, 2024",
+                title: "Firchilam from Howrah",
+                description: "Ei din eo kando ghotechilo I remember heheee.. firstly to ami tor pase ladies seat ee bose achi.. but tar thekeo boro amra bhul bus ee uthe porechilam.. then sei sealdah r oo pase giye daralo and 15 hete tarpor metro station ee ese pouchechilam.. kotooo sorry bolechilam and bujhte oo perechilam kosto hocche tor.. rod ee hata otota but tui ektu oo rag dekhasni.. really thank you for that",
+                image: "https://i.postimg.cc/xdjvwKzq/IMG20240603172713.jpg",
+                align: "left"
+            },
+            {
+                date: "September 1, 2024",
+                title: "OMG cafe date",
+                description: "After a long long time.. finally sob thik houar por going to a cafe.. kandhe matha rekhe sue thaka.. sob kotha clear kora.. and most importantly sei bonding the create kora once again.. ei jaiga ta with you holds a special place amr kache for sure...",
+                image: "https://i.postimg.cc/0NbWGR85/omg-01-09-24.jpg",
+                align: "right"
+            },
+            {
+                date: "September 4, 2024",
+                title: "Mela r shopping",
+                description: "Sei kamon mela jawar jed dhorechili tui ar srijani.. ami kikore ei cute meye ta k na boli bol.. arr mela ghorar porer harkat gulo oo khub cutee chilooo sacchi.. plus ek baat bolu oi hair band ta toke khub suit kore kintu mne akdom baccha vibes arr oi bracelet ta puro princess..",
+                image: "https://i.postimg.cc/fRf7qHk6/IMG20240904202938.jpg",
+                align: "left"
+            },
+            {
+                date: "September 20, 2024",
+                title: "Our aniversary",
+                description: "Ei din er chobi to nei amader aksathe.. but akta jinis jni je tor expression was like a child jake I would love forever.. jar jonno I can bring flowers forever.. jar sathe I can smile forever..",
+                image: "https://i.postimg.cc/85fCM0cw/IMG-20241119-165247.jpg",
+                align: "right"
+            },
+            {
+                date: "Till infinity",
+                title: "More to come..",
+                description: "Maybe aro onek erokom memory ese bosbe ei memory lane ee.. aro sob somoi ei time gulo cherish korte parbo",
+                image: "https://t4.ftcdn.net/jpg/04/55/07/77/360_F_455077730_wJ5b2bddWikO6zVOoq27yilT09xO6xnQ.jpg",
+                align: "left"
+            }
+        ];
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const timeline = document.querySelector('.timeline');
+            
+            memories.forEach(memory => {
+                const memoryCard = `
+                    <div class="memory-card ${memory.align}">
+                        <div class="memory-image">
+                            <img src="${memory.image}" alt="${memory.title}" onclick="openLightbox('${memory.image}')">
+                        </div>
+                        <div class="memory-description">
+                            <div class="date-badge">${memory.date}</div>
+                            <h2>${memory.title}</h2>
+                            <p>${memory.description}</p>
+                            <div class="memory-actions">
+                                <button class="like-btn">
+                                    <i class="far fa-heart"></i> <span class="like-count">0</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                timeline.innerHTML += memoryCard;
+            });
+            
+            // Remove loader after the page loads
+            document.querySelector('.loader').style.display = 'none';
+
+            // Floating hearts
+            const heartsContainer = document.getElementById('floating-hearts-container');
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = Math.random() * 2 + 3 + 's';
+                heartsContainer.appendChild(heart);
+            }
+            
+            // Like buttons
+            document.querySelectorAll('.like-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const icon = button.querySelector('i');
+                    const countSpan = button.querySelector('.like-count');
+                    let count = parseInt(countSpan.textContent);
+
+                    if (icon.classList.contains('far')) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        count++;
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        count--;
+                    }
+                    countSpan.textContent = count;
+                });
+            });
+
+            // Music player
+            const playPauseBtn = document.getElementById('play-pause-btn');
+            const music = document.getElementById('background-music');
+            playPauseBtn.addEventListener('click', () => {
+                if (music.paused) {
+                    music.play();
+                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                } else {
+                    music.pause();
+                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            });
+        });
+        
+        // Progress Bar
+        window.addEventListener('scroll', () => {
+            const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrolled = window.scrollY;
+            const progress = (scrolled / scrollableHeight) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+        });
+
+        // Lightbox
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const closeBtn = document.querySelector('.lightbox-close');
+
+        function openLightbox(src) {
+            lightbox.style.display = 'flex';
+            lightboxImg.src = src;
+        }
+
+        closeBtn.addEventListener('click', () => {
+            lightbox.style.display = 'none';
+        });
+
+    </script>
+</body>
+</html>
